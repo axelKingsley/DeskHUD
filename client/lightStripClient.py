@@ -1,3 +1,4 @@
+import itertools
 import math
 import serial
 import time
@@ -39,7 +40,6 @@ def render():
 def send(commandList):
     Serial.write(bytearray("".join(commandList), encoding="utf8"))
 
-# A simple compression that removes redundant colors from serial command lists
 def compressCommandList(commandList):
     # Compress Draw Commands by deleting draws which will be overwritten
     commandList = [command for index, command
@@ -51,26 +51,43 @@ def compressCommandList(commandList):
             in enumerate(commandList[:-1])
             if command[0] == 'c'
             and commandList[index + 1][0] == 'c']
+    # Here be dragons, and a really good moment to reflect on the opportunity cost
+    # of not refactoring recently. Identify all color commands, check if the next
+    # color matches the previous, and delete the "next" of the two if so.
+    # leave the command in place to not disturb the indexes as we iterate, I was
+    # burned by poor understanding of that recently
+    colorCommandIndexes = [index for index, command in enumerate(commandList)]
+    for index, colorCommandIndex in enumerate(colorCommandIndexes[1:]):
+        if commandList[colorCommandIndexes[index - 1]] == commandList[colorCommandIndex[index]]:
+            commandList[index] = 'REMOVE'
+    commandList = [command for command in commandList if not command == 'REMOVE']
+
+
 
 # Turns a list of pixels into an optimized command set
 def pixelListToRange(pixelList, offset):
     colorMap = {}
     # Reorganize the pixel list, grouping by color
+    # each Color Keys to a List of Lists so you can group sequential sets
+    # for optimizations
+    lastUsedColor = (-1, -1, -1)
     for index, color in enumerate(pixelList):
+        absIndex = index + offset
         if color in colorMap.keys():
-            colorMap[color][0].append(index + offset)
+            if lastUsedColor == color:
+                colorMap[color][-1].append(absIndex)
+            else:
+                colorMap[color].append([absIndex])
         else:
-            colorMap[color] = ([],[])
-    # Next search for sequential indexes to turn into a fill
-    for color in colorMap.keys():
-        colorMap[color][0].sort()
-        # Not yet, my brain's not working. please do this later, Axel.
+            colorMap[color] = [[absIndex]]
+        lastUsedColor = color
 
     # Finally render them to a list of commands
     commandList = []
     for color in colorMap.keys():
         commandList.append(setColor(color))
-        commandList += [draw(i) for i in colorMap[color][0]]
+        commandList += [fill(i[0], i[-1] - i[0]) for i in colorMap[color] if len(i) > 1]
+        commandList += [draw(i[0]) for i in colorMap[color] if len(i) == 1]
     return commandList
 
 Serial = serial.Serial('/dev/ttyACM1', baudrate=115200)  # open serial port

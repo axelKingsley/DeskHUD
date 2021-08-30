@@ -24,52 +24,81 @@ Adafruit_NeoPixel strip(LED_COUNT, LED_PIN, NEO_GRB + NEO_KHZ800);
 //   NEO_RGBW    Pixels are wired for RGBW bitstream (NeoPixel RGBW products)
 
 
-// setup() function -- runs once at startup --------------------------------
+char serialReadWait(){
+  while (true) {
+    if(Serial.available() > 0) return Serial.read();
+    delay(0.001);
+  }
+}
+
+bool invertedIndexing = true;
+void flipIndexingMode() {
+  invertedIndexing = !invertedIndexing;
+}
+
+int toIndex(int parsedInt) {
+  return invertedIndexing ?
+    LED_COUNT - (parsedInt % LED_COUNT) :
+    parsedInt % LED_COUNT;
+}
 
 void setup() {
-  // These lines are specifically to support the Adafruit Trinket 5V 16 MHz.
-  // Any other board, you can remove this part (but no harm leaving it):
-#if defined(__AVR_ATtiny85__) && (F_CPU == 16000000)
-  clock_prescale_set(clock_div_1);
-#endif
-  // END of Trinket-specific code.
-
   strip.begin();           // INITIALIZE NeoPixel strip object (REQUIRED)
   strip.show();            // Turn OFF all pixels ASAP
   strip.setBrightness(255); // Set BRIGHTNESS (max = 255)
-  Serial.begin(9600);
+  Serial.begin(115200);
   Serial.setTimeout(100);
 }
 
 void loop() {
   char function = Serial.read();
+  if(function == 'b') serialSetBackground();
   if(function == 'd') serialDraw();
   if(function == 'f') serialFill();
   if(function == 'c') serialSetColor();
   if(function == 's') strip.show();
+  if(function == 'i') flipIndexingMode();
 }
 
-int color = strip.Color(0, 0, 0);
+uint32_t color = strip.Color(0, 0, 0);
 void serialSetColor() {
-  int r = Serial.parseInt();
-  int g = Serial.parseInt();
-  int b = Serial.parseInt();
-  color =  strip.Color(r, g, b);
+  color = serialParseColor();
+}
+
+void serialSetBackground() {
+  strip.fill(serialParseColor(), 0, 300);
+}
+
+uint32_t serialParseColor() {
+  String r, g, b;
+  r = g = b = "";
+  r.concat(serialReadWait());
+  r.concat(serialReadWait());
+  g.concat(serialReadWait());
+  g.concat(serialReadWait());
+  b.concat(serialReadWait());
+  b.concat(serialReadWait());
+  int rint = strtol(r.c_str(), NULL, 16);
+  int gint = strtol(g.c_str(), NULL, 16);
+  int bint = strtol(b.c_str(), NULL, 16);
+  return strip.Color(
+    rint,
+    gint,
+    bint);
 }
 
 void serialDraw() {
-  int i = Serial.parseInt();
-  int r = Serial.parseInt();
-  int g = Serial.parseInt();
-  int b = Serial.parseInt();
-  strip.setPixelColor(i, strip.Color(r, g, b));
+  int i = toIndex(Serial.parseInt());
+  strip.setPixelColor(i, color);
 }
 
 void serialFill() {
-  int i = Serial.parseInt();
+  int i = toIndex(Serial.parseInt());
   int n = Serial.parseInt();
-  int r = Serial.parseInt();
-  int g = Serial.parseInt();
-  int b = Serial.parseInt();
-  strip.fill(strip.Color(r, g, b), i, n);
+  if (invertedIndexing) {
+    strip.fill(color, i - n, n + 1);
+  }
+  else {
+    strip.fill(color, i, n);
+  }
 }
