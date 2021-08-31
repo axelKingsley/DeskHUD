@@ -86,7 +86,7 @@ def pixelListToRange(pixelList, offset):
     commandList = []
     for color in colorMap.keys():
         commandList.append(setColor(color))
-        commandList += [fill(i[0], i[-1] - i[0]) for i in colorMap[color] if len(i) > 1]
+        commandList += [fill(i[0], len(i)) for i in colorMap[color] if len(i) > 1]
         commandList += [draw(i[0]) for i in colorMap[color] if len(i) == 1]
     return commandList
 

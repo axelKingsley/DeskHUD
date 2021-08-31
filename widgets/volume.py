@@ -27,7 +27,8 @@ def toPixels():
     widgetLevel = int(volumeLevel * scale)
     onValue = int(200*opacity)
     pixelList = []
-    pixelList += [ (onValue, onValue, onValue) ] * min(widgetLevel, widgetSize - 1)
+    if volumeLevel > 0:
+        pixelList += [ (onValue, onValue, onValue) ] * widgetLevel
     pixelList += [ (onValue, 0, 0) ]
-    pixelList += [ (0, 0, 0) ] * (max((widgetSize -  widgetLevel), 1) - 1)
+    pixelList += [ (0, 0, 0) ] * (widgetSize - len(pixelList))
     return pixelList

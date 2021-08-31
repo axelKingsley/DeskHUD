@@ -92,11 +92,12 @@ void serialDraw() {
   strip.setPixelColor(i, color);
 }
 
+// This function is a little busted. Some off by 1 errors
 void serialFill() {
   int i = toIndex(Serial.parseInt());
   int n = Serial.parseInt();
   if (invertedIndexing) {
-    strip.fill(color, i - n, n + 1);
+    strip.fill(color, i - n+1, n + 1);
   }
   else {
     strip.fill(color, i, n);
