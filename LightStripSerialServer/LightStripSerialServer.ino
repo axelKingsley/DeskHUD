@@ -35,10 +35,10 @@ bool invertedIndexing = true;
 void flipIndexingMode() {
   invertedIndexing = !invertedIndexing;
 }
-
 int toIndex(int parsedInt) {
+  int maxIndex = LED_COUNT - 1;
   return invertedIndexing ?
-    LED_COUNT - (parsedInt % LED_COUNT) :
+    maxIndex - (parsedInt % LED_COUNT) :
     parsedInt % LED_COUNT;
 }
 
@@ -46,7 +46,7 @@ void setup() {
   strip.begin();           // INITIALIZE NeoPixel strip object (REQUIRED)
   strip.show();            // Turn OFF all pixels ASAP
   strip.setBrightness(255); // Set BRIGHTNESS (max = 255)
-  Serial.begin(115200);
+  Serial.begin(230400);
   Serial.setTimeout(100);
 }
 
@@ -97,7 +97,7 @@ void serialFill() {
   int i = toIndex(Serial.parseInt());
   int n = Serial.parseInt();
   if (invertedIndexing) {
-    strip.fill(color, i - n+1, n + 1);
+    strip.fill(color, i - n+1, n);
   }
   else {
     strip.fill(color, i, n);

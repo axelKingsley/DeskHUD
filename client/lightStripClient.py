@@ -90,7 +90,7 @@ def pixelListToRange(pixelList, offset):
         commandList += [draw(i[0]) for i in colorMap[color] if len(i) == 1]
     return commandList
 
-Serial = serial.Serial('/dev/ttyACM1', baudrate=115200)  # open serial port
+Serial = serial.Serial('/dev/ttyACM0', baudrate=230400)  # open serial port
 time.sleep(3)
 print('{} Connection Established'.format(Serial.name))
 if __name__ == '__main__':
