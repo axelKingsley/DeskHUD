@@ -12,9 +12,10 @@ if __name__ == '__main__':
     animationFrame = 0
     animationFrames = 100
     pixelPattern = [
-            (20, 0, 20)
+            (44,44,44),
+            (0,0,0)
             ]
-    pixelPattern = pixelPattern * 300
+    pixelPattern = pixelPattern * 140
 
     spotlight = [
             (100,0,0),
@@ -28,10 +29,10 @@ if __name__ == '__main__':
     while True:
         sinOsc = math.sin(math.pi * 2 * (animationFrame/animationFrames))
         commandList = []
-        commandList.append(lights.setBackground((100, 100, 100)))
-       # commandList += lights.pixelListToRange(pixelPattern, 0)
-       # commandList += lights.pixelListToRange(spotlight, 150 + sinOsc*100)
-       # commandList += lights.pixelListToRange(volume.toPixels(), 0)
+       # commandList.append(lights.setBackground((100, 100, 100)))
+        commandList += lights.pixelListToCommandList(pixelPattern, 0)
+        commandList += lights.pixelListToCommandList(spotlight, 150 + sinOsc*100)
+        commandList += lights.pixelListToCommandList(volume.toPixels(), 0)
 
         commandList.append(lights.render())
         lights.compressCommandList(commandList)

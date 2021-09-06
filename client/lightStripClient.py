@@ -84,6 +84,21 @@ def pixelListToCommandList(pixelList, offset):
 
     # Finally render them to a list of commands
     commandList = []
+
+    # First, reduce the most expensive color into a single background fill, making sure
+    # it's added first.
+    sortedPixelSets = sorted(colorMap.values(), key = len)
+    for color in colorMap.keys():
+        if colorMap[color] is sortedPixelSets[-1]:
+            commandList.append(setColor(color))
+            firstIndex = colorMap[color][0][0]
+            lastIndex = colorMap[color][-1][-1]
+            commandList.append(fill(firstIndex, lastIndex - firstIndex))
+            del colorMap[color]
+            # Just in case the "is" comaritor has wrinkes I'm not aware of,
+            # only do this to one color in the map, or else there would be rendering issues.
+            break
+    # Then render the sets to draws or fills, with color setting up-front.
     for color in colorMap.keys():
         commandList.append(setColor(color))
         commandList += [fill(i[0], len(i)) for i in colorMap[color] if len(i) > 1]
