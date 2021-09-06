@@ -2,7 +2,7 @@
 
 # Purpose
 
-I have a NeoPixel light strip attached to my desk. In theory, it would be cool to have the lighting at my desk serve notifications and information, on top of being visually appealing. To do that, I need a code pipeline that goes from my PC to the NeoPixel, by way of Arduino.
+I have a NeoPixel light strip attached to my desk. In theory, it would be cool to have the lighting at my desk serve notifications and information, on top of being visually appealing. To do that, I need a code pipeline that goes from my PC to the NeoPixel, by way of Arduino. Once that's well in place, I can write widgets that hook into the client on the PC, controlling the lights in some sophisticated way.
 
 # Physical Layout
 
