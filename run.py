@@ -6,6 +6,9 @@ from widgets import volume
 volume.scale = 1
 
 if __name__ == '__main__':
+    lights.initialize('/dev/ttyACM0')
+    print ("CLIENT CONNECTED")
+
     animationFrame = 0
     animationFrames = 100
     pixelPattern = [

@@ -65,7 +65,7 @@ def compressCommandList(commandList):
 
 
 # Turns a list of pixels into an optimized command set
-def pixelListToRange(pixelList, offset):
+def pixelListToCommandList(pixelList, offset):
     colorMap = {}
     # Reorganize the pixel list, grouping by color
     # each Color Keys to a List of Lists so you can group sequential sets
@@ -90,63 +90,10 @@ def pixelListToRange(pixelList, offset):
         commandList += [draw(i[0]) for i in colorMap[color] if len(i) == 1]
     return commandList
 
-Serial = serial.Serial('/dev/ttyACM0', baudrate=230400)  # open serial port
-time.sleep(3)
-print('{} Connection Established'.format(Serial.name))
+def initialize(devicePath='/dev/ttyACM0'):
+    global Serial
+    Serial = serial.Serial(devicePath, baudrate=230400)  # open serial port
+    time.sleep(3)
+
 if __name__ == '__main__':
-    animationFrame = 0
-    animationFrames = 100
-    focusDrawingBlue = [
-        (0, 200, 0),
-        (0, 200, 0),
-        (0, 200, 0),
-        (0, 200, 0),
-        (0, 200, 0),
-        (0, 200, 0),
-        (0, 200, 0)
-        ]
-    focusDrawingRed = [
-        (0, 0, 0),
-        (0, 0, 0),
-        (0, 0, 0),
-        (200, 200, 200),
-        (200, 200, 200),
-        (200, 200, 200),
-        (0, 0, 0),
-        (0, 0, 0),
-        (0, 0, 0),
-        ]
-    focusDrawingOrangeTunnel = [
-        (200, 100, 0),
-        (200, 100, 0),
-        (200, 100, 0),
-        (200, 100, 0),
-        (200, 100, 0),
-        (200, 100, 0),
-        (200, 100, 0),
-        (200, 100, 0),
-        (200, 100, 0),
-        (200, 100, 0),
-        (200, 100, 0),
-        (200, 100, 0),
-        ]
-    while True:
-        sinOsc = math.sin(math.pi * 2 * (animationFrame/animationFrames))
-        commandList = []
-        commandList.append(setBackground((30,0,30)))
-        commandList += pixelListToRange(focusDrawingRed, 150+sinOsc*32)
-        commandList += pixelListToRange(focusDrawingBlue, 200+sinOsc*62)
-        commandList += pixelListToRange(focusDrawingOrangeTunnel, 150)
-        commandList += pixelListToRange(focusDrawingOrangeTunnel, 250)
-        commandList += pixelListToRange(focusDrawingOrangeTunnel, 80)
-        commandList.append(render())
-        compressCommandList(commandList)
-        print(commandList)
-        send(commandList)
-
-        animationFrame = (animationFrame +1) % animationFrames
-        time.sleep(0.015)
-        #input("NEXT")
-
-    input('Waiting')
-    Serial.close()             # close port
+    pass
