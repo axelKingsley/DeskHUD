@@ -3,7 +3,7 @@ import time
 from client import lightStripClient as lights
 from widgets import volume
 
-volume.scale = 1
+volume.scale = 0.5
 
 if __name__ == '__main__':
     lights.initialize('/dev/ttyACM0')
@@ -11,12 +11,6 @@ if __name__ == '__main__':
 
     animationFrame = 0
     animationFrames = 100
-    pixelPattern = [
-        (100, 0, 0),
-        (200, 0, 0),
-        (100, 0, 0),
-        ] * 100
-
 
     spotlight = [
         (200, 200, 200),
@@ -31,10 +25,9 @@ if __name__ == '__main__':
     while True:
         sinOsc = math.sin(math.pi * 2 * (animationFrame/animationFrames))
         commandList = []
-       # commandList.append(lights.setBackground((100, 100, 100)))
-        commandList += lights.pixelListToCommandList(pixelPattern, 0)
-        commandList += lights.pixelListToCommandList(spotlight, 100 + sinOsc*100)
-        commandList += lights.pixelListToCommandList(spotlight, 100 - sinOsc*100)
+        commandList.append(lights.setBackground((200, 0, 0)))
+        commandList += lights.pixelListToCommandList(spotlight, 156 + sinOsc*106)
+        commandList += lights.pixelListToCommandList(spotlight, 156 - sinOsc*106)
         commandList += lights.pixelListToCommandList(volume.toPixels(), 0)
 
         commandList.append(lights.render())
