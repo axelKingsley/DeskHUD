@@ -93,7 +93,10 @@ def pixelListToCommandList(pixelList, offset):
             commandList.append(setColor(color))
             firstIndex = colorMap[color][0][0]
             lastIndex = colorMap[color][-1][-1]
-            commandList.append(fill(firstIndex, lastIndex - firstIndex))
+            if lastIndex > firstIndex:
+                commandList.append(fill(firstIndex, lastIndex - firstIndex))
+            else:
+                commandList.append(draw(firstIndex))
             del colorMap[color]
             # Just in case the "is" comaritor has wrinkes I'm not aware of,
             # only do this to one color in the map, or else there would be rendering issues.
