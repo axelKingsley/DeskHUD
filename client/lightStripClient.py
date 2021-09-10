@@ -110,7 +110,7 @@ def pixelListToCommandList(pixelList, offset):
 
 def initialize(devicePath='/dev/ttyACM0'):
     global Serial
-    Serial = serial.Serial(devicePath, baudrate=230400)  # open serial port
+    Serial = serial.Serial(devicePath, baudrate=115200)  # open serial port
     time.sleep(3)
 
 if __name__ == '__main__':

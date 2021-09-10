@@ -46,7 +46,7 @@ void setup() {
   strip.begin();           // INITIALIZE NeoPixel strip object (REQUIRED)
   strip.show();            // Turn OFF all pixels ASAP
   strip.setBrightness(255); // Set BRIGHTNESS (max = 255)
-  Serial.begin(230400);
+  Serial.begin(115200);
   Serial.setTimeout(100);
 }
 
