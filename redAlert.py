@@ -25,7 +25,7 @@ if __name__ == '__main__':
     while True:
         sinOsc = math.sin(math.pi * 2 * (animationFrame/animationFrames))
         commandList = []
-        commandList.append(lights.setBackground((200, 0, 0)))
+        commandList.append(lights.setBackground((255, 0, 0)))
         commandList += lights.pixelListToCommandList(spotlight, 156 + sinOsc*106)
         commandList += lights.pixelListToCommandList(spotlight, 156 - sinOsc*106)
         commandList += lights.pixelListToCommandList(volume.toPixels(), 0)

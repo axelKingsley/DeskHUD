@@ -10,28 +10,36 @@ if __name__ == '__main__':
     lights.initialize('/dev/ttyACM0')
     print ("CLIENT CONNECTED")
 
-    palette = [(0, 50, 0),
-                (20,50,0),
-                (0,0,0),
-                (0,0,0),
-                (0,0,0),
-                (0,0,0),
-                (0,0,0),
-                (0,0,0),
-                (0,0,0),
-                (0,0,0),
-                (0,0,0),
-                (0,50,20)]
+    animationFrame = 0
+    animationFrames = 100
 
-    backdrop = [ (0, 0, 0), ] * 263
+    palette = [
+            (200, 200, 0),
+            (0, 0, 0),
+            (255, 255, 0),
+            (220, 200, 10),
+            (210, 100, 0),
+            (160, 100, 0),
+            (160, 100, 0),
+            (20, 17, 0),
+            (20, 5, 0),
+            (20, 17, 5),
+            (20, 17, 5),
+            (20, 17, 5),
+            ]
 
-    redHaze = [(0,0,0)]*50 + [(100,255,100)]*213
+    def sconce():
+        sconceSize = 7
+        flameSize = random.randint(1, 3)
+        leftSide = random.randint(0, sconceSize - flameSize)
+        rightSide = sconceSize - leftSide
+        return [(0,0,0)] * leftSide + [random.choice(palette)] * flameSize + [(0,0,0)] * rightSide
 
-    def randomInsert():
-        global backdrop
-        sliceIndex = random.randint(0,263)
-        backdrop = backdrop[:sliceIndex] + [random.choice(palette)] + backdrop[sliceIndex:]
-        backdrop = backdrop[-263:]
+    #lights.send(['i'])
+
+    redHaze = [(0,0,0)]*50 + [(255,0,0)]*213
+
+    backdrop = [(0,0,0)]*263
 
     def smooth(backdrop):
         newBackdrop = []
@@ -45,10 +53,6 @@ if __name__ == '__main__':
                     ))
         return newBackdrop
 
-    def pushInsert():
-        global backdrop
-        backdrop = backdrop[1:] + [random.choice(palette)]
-
     def pixelAverage(pixel1, pixel2, amnt1=0.5, amnt2=0.5):
         return (
                 pixel1[0]*amnt1 + pixel2[0]*amnt2,
@@ -56,9 +60,22 @@ if __name__ == '__main__':
                 pixel1[2]*amnt1 + pixel2[2]*amnt2,
                 )
 
+    def applySconces(numberOfSconces, sconceStart = 50, sconceEnd = 263 - len(sconce())):
+        global backdrop
+        for i in range(numberOfSconces):
+            offset = int((((sconceEnd - sconceStart)/(numberOfSconces-1)) * i) + sconceStart)
+            for j, pixel in enumerate(sconce()):
+                if offset + j < len(backdrop) and random.randint(0,3) == 0:
+                    backdrop[offset + j] = pixelAverage(backdrop[offset + j], pixel, amnt1 = 0.75, amnt2 = 0.35)
+
     while True:
-        randomInsert()
-        pushInsert()
+        sconceStart = 50
+        # A sconce size is subtracted because we are spacing out their start indicies.
+        sconceEnd = 263 - len(sconce())
+        numberOfSconces = 7
+        applySconces(7)
+
+
         backdropPostProcess = backdrop.copy()
         for i, pixel in enumerate(backdrop):
             backdropPostProcess[i] = pixelAverage(pixel, pixel, amnt1 = 1, amnt2 = 0.3)
@@ -66,7 +83,9 @@ if __name__ == '__main__':
 
         backdropPostProcess = smooth(backdropPostProcess)
 
+
         commandList = []
+        commandList.append(lights.setBackground((0, 0, 0)))
         commandList += lights.pixelListToCommandList(backdropPostProcess, 0)
         commandList += lights.pixelListToCommandList(volume.toPixels(), 0)
 
@@ -75,5 +94,6 @@ if __name__ == '__main__':
         print(commandList)
         lights.send(commandList)
 
-        time.sleep(0.015)
+        animationFrame = (animationFrame +1) % animationFrames
+        time.sleep(0.01)
         #input("NEXT")

@@ -6,7 +6,7 @@ import time
 def buildCommand(chars, ints):
     return ''.join(chars) + ' '.join([str(int(i)) for i in ints])
 
-serializePixel = lambda i: '{0:0{1}x}'.format(i, 2)
+serializePixel = lambda i: '{0:0{1}x}'.format(int(i), 2)
 def setColor(pixel):
     return buildCommand([
         'c',
