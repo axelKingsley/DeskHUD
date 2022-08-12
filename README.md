@@ -25,13 +25,3 @@ Like all personal projects, it's a mess. But the basic premise is:
 Depending on the image being drawn, running the strip at 60fps is not unreasonable. Not all drawings are optimization friendly, but there's more work to be done with that later. The device can run animations well, and I have a volume indicator widget which auto-hides when the volume isn't being changed.
 
 You can also reverse the indexing mode if you want to treat the end of the strip as i=0 like I do.
-
-# Open Issues
-
-* Fill commands are being incorrectly applied on the device, seems like I don't understand the NeoPixel fill command well enough.
-
-* Future Optimization: Whatever color would generate the most draw/fill commands can instead be converted into a single fill from the earliest to the latest index it appears. So long as it's drawn first, other colors will cover up the inappropriately filled regions.
-
-* I'd like to get 2 more strips.
-
-* I need a power supply that can actually put out high-brightness.
